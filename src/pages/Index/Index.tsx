@@ -1,7 +1,7 @@
-import { Box, LinearProgress, Step, StepLabel, Stepper, useTheme } from '@mui/material';
+import { Box, LinearProgress, MobileStepper, Step, StepLabel, Stepper, useTheme } from '@mui/material';
 import React, { useState } from 'react';
 import { Content, ContentStepper } from '../../components';
-import { Zoom } from '@mui/material';
+import { useWindowSize } from '@uidotdev/usehooks';
 
 const steps = [
   'Início',
@@ -14,19 +14,23 @@ const steps = [
 
 const Index = () => {
   const [activeStep, setActiveStep] = useState(0);
+  const { width, height } = useWindowSize()
+  const theme = useTheme();
+  const isMobileDevice = width !== null && width < 800
 
   return (
     <Box component="main" width="100vw" height="100vh" display="flex" flexDirection="column" justifyContent="space-between">
-      <Zoom>
-        <Content />
-      </Zoom>
-      <Box display="flex" justifyContent="space-around" height="98.5%">
+      <Box display="flex" flexDirection={isMobileDevice ? "column" : "row"} justifyContent={isMobileDevice ? "space-between" : "space-around"} height="98.5%">
         <Content currentStep={activeStep} />
-        <ContentStepper activeStep={activeStep} setActiveStep={setActiveStep} steps={steps} />
+        <ContentStepper activeStep={activeStep} setActiveStep={setActiveStep} steps={steps} isMobileDevice={isMobileDevice} theme={theme} />
       </Box>
-      <LinearProgress variant="determinate" value={activeStep ? ((activeStep + 1) / steps.length) * 100 : 0} style={{
-        height: "1.5%"
-      }} />
+      {isMobileDevice ? (
+        <></>
+      ) : (
+        <LinearProgress variant="determinate" value={activeStep ? ((activeStep + 1) / steps.length) * 100 : 0} style={{
+          height: "1.5%"
+        }} />
+      )}
     </Box>
   );
 }
